@@ -41,28 +41,28 @@ private:
     T asterate;
 
 public:
-    NFA(std::vector<T> &alphabet, std::vector<T> &regex, T asterate) : alphabet(std::move(alphabet)), regex(std::move(regex)), asterate(asterate)
+    NFA(std::vector<T> &alphabet, std::vector<T> &r, T asterate) : alphabet(std::move(alphabet)), regex(std::move(r)), asterate(asterate)
     {
         nodes[idCounter] = new NFANode<T>(idCounter);
-        for (int i = 0; i < this->regex.size(); i++)
+        for (int i = 0; i < regex.size(); i++)
         {
-            gen_node(idCounter);
+            gen_node(idCounter, regex[i]);
         }
         nodes[idCounter]->isFinal = true;
     };
 
-    void gen_node(int &index)
+    void gen_node(int &index, T &c)
     {
         NFANode<T> *newNode = new NFANode<T>(index + 1);
         NFANode<T> *lastNode = nodes[index];
-        if (regex[index] == asterate)
+        if (c == asterate)
         {
             free(newNode);
-            lastNode->add_transition(regex[index], lastNode);
+            lastNode->add_transition(c, lastNode);
         }
         else
         {
-            lastNode->add_transition(regex[index], newNode);
+            lastNode->add_transition(c, newNode);
             nodes[++index] = newNode;
         }
     }
@@ -101,11 +101,11 @@ int main()
 {
 
     std::vector<char> alphabet = {'a', 'b', 'c'};
-    std::vector<char> regex = {'a', '*'};
+    std::vector<char> regex = {'a', '*', 'b'};
 
     NFA<char> *nfa = new NFA<char>(alphabet, regex, '*');
 
-    std::cout << nfa->is_valid_expr({'a', 'a', 'b'}) << std::endl;
+    std::cout << nfa->is_valid_expr({'a', 'a', 'a'}) << std::endl;
 
     return 0;
 }
